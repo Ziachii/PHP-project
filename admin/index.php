@@ -2,6 +2,13 @@
 include "../config.php";
 include "../library/db.php";
 include "../library/img.php";
+include "../library/auth.php";
+if(!isLogin())
+{
+  header("location: login.php");
+  exit(0);
+
+}
 
 $page = "dashboard.php";
 if (isset($_GET['p'])) {

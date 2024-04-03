@@ -2,6 +2,8 @@
  include "config.php";
  include "library/db.php";
     $page = "home.php";
+    $pagetitle = "";
+    $pagecontent = "";
     if(isset($_GET['p']))
     {
         $p = $_GET['p'];
@@ -12,6 +14,14 @@
                 break;
             case "contact":
                 $page = "contact.php";
+                break;
+            case "page":
+                $page = "page.php";
+                $pageid = $_GET['pid'];
+                $result = dbSelect("tbl_pages", "*", "pageid = $pageid", "");
+                $row = mysqli_fetch_array($result);
+                $pagetitle = $row['title'];
+                $pagecontent = $row['content'];
                 break;
         }
     }

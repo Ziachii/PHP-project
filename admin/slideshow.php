@@ -17,9 +17,14 @@ if (isset($_GET['action'])) {
       $row = mysqli_fetch_array($result);
       $img = $row['img'];
       $result = dbDelete("tbl_slideshow", "ssid = $ssid");
-      $path = "../img/$img";
-      if (file_exists($path) && $result) {
-        unlink($path);
+      $imgpath = "../img/$img";
+      $imgthumbnailpath = "../img/thumbnail/$img";
+      if (file_exists($imgpath) && $result) {
+        unlink($imgpath);
+        if(file_exists($imgthumbnailpath))
+        {
+           unlink($imgthumbnailpath);
+        }
       }
       break;
     case "1":
@@ -113,6 +118,36 @@ if (isset($_GET['action'])) {
         $data = "";
         if(file_exists($_FILES['fileimg']['tmp_name']))
         {
+            $result = dbSelect("tbl_slideshow", "img", "ssid= $ssid","");
+            $row = mysqli_fetch_array($result);
+            $oldimg = $row['img'];
+
+            $org_name = $_FILES["fileimg"]["name"];
+            $path_parts = pathinfo($org_name);
+            $extension = $path_parts['extension'];
+            $img = time() . ".". $extension;
+            $path = "../img/";
+
+            $data = ["title"=>"$title", "subtitle"=>"$subtitle","text"=>"$text","link"=>"$link", "enable"=>"$enable",
+              "img"=>"$img"];
+
+              $d = getimagesize($_FILES['fileimg']['tmp_name']);
+              $width = $d[0];
+              $height = $d[1];
+              $imageType = $d[2];
+      
+              createThumbnail($imageType, $_FILES['fileimg']['tmp_name'],$width, $height, $path,$img);
+              
+              $oldimagepath = "../img/$oldimg";
+              $oldimagethumbnailpath = "../img/thumbnail/$oldimg";
+              if(file_exists($oldimagepath))
+              {
+                  unlink($oldimagepath);
+              }
+              if(file_exists($oldimagethumbnailpath))
+              {
+                  unlink($oldimagethumbnailpath);
+              }
 
         }
         else
